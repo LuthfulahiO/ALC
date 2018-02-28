@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <style>
+    body {
+      background-image: repeating-radial-gradient(skyblue 0%, whitesmoke 100%);
+    }
+
+      @media screen and (max-width: 992px) {
+        table, #head {
+          display: block;
+          width: 90% !important;
+          margin: auto !important;
+        }
+        table > *, table tr, table td, table th {
+          display: block;
+        }
+        table thead {
+          display: none;
+        }
+        table tbody tr {
+          height: auto;
+          padding: 15px 0;
+        }
+        table tbody tr td, th {
+          text-align: right;
+        }
+        table tbody tr td:last-child {
+          margin-bottom: 0;
+        }
+         table tbody tr th:first-child {
+          margin-top: 10px;
+        }
+        table tbody tr td::before, th::before {
+          font-family: OpenSans-Regular;
+          font-size: 14px;
+          color: #999999;
+          line-height: 1.2;
+          float: left;
+        }
+        tbody tr {
+          font-size: 14px;
+        }
+        tr{
+          box-shadow: 10px 5px 18px #e7e7e7;
+          border-radius: 20px;
+
+        }
+        table tbody tr th:nth-child(1)::before {
+            content: "Rank";
+
+          }
+          table tbody tr td:nth-child(2)::before {
+            content: "Name(ID)";
+          }
+          table tbody tr td:nth-child(3)::before {
+            content: "Price-USD";
+          }
+          table tbody tr td:nth-child(4)::before {
+            content: "Price-NGN";
+          }
+          table tbody tr td:nth-child(5)::before {
+            content: "Price-BTC";
+          }
+          table tbody tr td:nth-child(6)::before {
+            content: "Change 1h(%)";
+          }
+          table tbody tr td:nth-child(7)::before{
+            content: "Change 24h(%)"
+          }
+          table tbody tr td:nth-child(8)::before{
+            content: "Change 7d(%)"
+          }
+          table tbody tr td:nth-child(9)::before{
+            content: "Last Updated"
+          }
+
+      }
+
+    </style>
+  </head>
+  <body class="container">
+    <div class="row" id="head">
+      <div class="col-md-12">
+        <h1>krypToDate</h1>
+      </div>
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name(ID)</th>
+          <th>Price-USD</th>
+          <th>Price-NGN</th>
+          <th>Price-BTC</th>
+          <th>Change 1h(%)</th>
+          <th>Change 24(%)</th>
+          <th>Change 7d(%)</th>
+          <th>Last Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      fetch("https://api.coinmarketcap.com/v1/ticker/?limit=20")
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res.length);
+          res.forEach((elem) => {
+            console.log(elem.id);
+            let d =  Date.now();
+            let m = d / 60000;
+            let s = m * 60;
+            let updatedSeconds = s - elem.last_updated;
+
+            console.log(s);
+            console.log(elem.last_updated);
+            let xx = d - elem.last_updated;
+            function secondsToMinutes(sec) {
+              let minutes = (sec / 60).toFixed(2);
+              return minutes;
+            }
+            const dollarToNaira = (dollar) => {
+                let naira = dollar * 360;
+                var seperated = naira.toLocaleString();
+                return seperated;
+            }
+            const dollarReal = (dollar2) => {
+              var sp = dollar2 * 1;
+              var sp2 = sp.toLocaleString();
+              return sp2;
+            }
+            $('tbody').append(`
+                <tr>
+                  <th scope="row">${elem.rank}</th>
+                  <td>${elem.name}(${elem.symbol})</td>
+                  <td>$${dollarReal(elem.price_usd)}</td>
+                  <td>#${dollarToNaira(elem.price_usd)}</td>
+                  <td>${elem.price_btc}</td>
+                  <td>${elem.percent_change_1h}</td>
+                  <td>${elem.percent_change_24h}</td>
+                  <td>${elem.percent_change_7d}</td>
+                  <td>${secondsToMinutes(updatedSeconds)}minutes</td>
+                </tr>
+              `)
+
+            // let result = document.getElementById('listOfCoins');
+            // result.innerHTML += "<option>" + elem.id + "</option>";
+          })
+        })
+    </script>
+  </body>
+</html>
